@@ -61,6 +61,7 @@ jobs:
 
       - name: Replace source-boot kernel
         run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/out/arch/arm64/boot
           ./magiskbootx86_64 unpack boot.img
           mv -f Image kernel
           ./magiskbootx86_64 repack boot.img
