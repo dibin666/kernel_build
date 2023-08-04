@@ -31,7 +31,7 @@ jobs:
           wget https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt
           export V="$(cat Clang-main-lastbuild.txt)"
           wget -q https://github.com/ZyCromerZ/Clang/releases/download/18.0.0-${V}-release/Clang-18.0.0-${V}.tar.gz
-          tar -xzf Clang-18.0.0-${V}.tar.gz
+          tar -xzvf Clang-18.0.0-${V}.tar.gz
           
       - name: Setup KernelSU
         run: |
