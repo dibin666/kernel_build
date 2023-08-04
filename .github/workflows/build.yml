@@ -41,6 +41,7 @@ jobs:
 
       - name: Build kernel
         run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           export PATH=clang/bin:${PATH}
           args="                  ARCH=arm64 \
                                   CC=clang \
