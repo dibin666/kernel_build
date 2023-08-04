@@ -21,7 +21,7 @@ jobs:
 
       - name: Pull toolchain
         run: |
-          cd GITHUB_WORKSPACE/kernel_buildspace
+          mkdir GITHUB_WORKSPACE/kernel_buildspace && cd GITHUB_WORKSPACE/kernel_buildspace
           mkdir clang && cd clang
           wget https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt
           V="$(cat Clang-main-lastbuild.txt)"
