@@ -19,30 +19,29 @@ jobs:
           sudo apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
           mkdir -p $GITHUB_WORKSPACE/kernel_buildspace
 
-      - name: Pull toolchain
-        run: |
-          cd $GITHUB_WORKSPACE/kernel_buildspace
-          mkdir clang && cd clang
-          wget https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt
-          export V="$(cat Clang-main-lastbuild.txt)"
-          wget -q https://github.com/ZyCromerZ/Clang/releases/download/18.0.0-${V}-release/Clang-18.0.0-${V}.tar.gz
-          tar -xf Clang-18.0.0-${V}.tar.gz
-          cd ..
-
       - name: Pull kernel source
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace
           git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} kernel-source
-
+          
+      - name: Pull toolchain
+        run: |
+          cd kernel-source
+          mkdir clang && cd clang
+          wget https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt
+          export V="$(cat Clang-main-lastbuild.txt)"
+          wget https://github.com/ZyCromerZ/Clang/releases/download/18.0.0-${V}-release/Clang-18.0.0-${V}.tar.gz
+          tar -xf Clang-18.0.0-${V}.tar.gz
+          cd ..
+          
       - name: Setup KernelSU
         run: |
-          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           rm -rf KernelSU
           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
 
       - name: Build kernel
         run: |
-          export PATH=$GITHUB_WORKSPACE/kernel_buildspace/clang/bin:${PATH}
+          export PATH=clang/bin:${PATH}
           args="                  ARCH=arm64 \
                                   CC=clang \
                                   O=../out \
