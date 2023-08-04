@@ -44,7 +44,7 @@ jobs:
           export PATH=clang/bin:${PATH}
           args="                  ARCH=arm64 \
                                   CC=clang \
-                                  O=../out \
+                                  O=out \
                                   ${{ env.BUILD_ARGS }} \
                                   CROSS_COMPILE=aarch64-linux-gnu-"
           make ${args} ${{ env.KERNEL_TARGET }}
