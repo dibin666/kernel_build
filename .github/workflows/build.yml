@@ -26,7 +26,7 @@ jobs:
           
       - name: Pull toolchain
         run: |
-          cd kernel-source
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           mkdir clang && cd clang
           wget https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt
           export V="$(cat Clang-main-lastbuild.txt)"
