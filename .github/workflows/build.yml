@@ -42,7 +42,8 @@ jobs:
       - name: Build kernel
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
-          export PATH=clang/bin:${PATH}
+          export CLANG_PATH=$GITHUB_WORKSPACE/kernel_buildspace/kernel-source/clang
+          export PATH=${CLANG_PATH}/bin:${PATH}
           args="                  ARCH=arm64 \
                                   CC=clang \
                                   O=out \
