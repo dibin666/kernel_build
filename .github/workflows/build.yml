@@ -30,12 +30,12 @@ jobs:
           mkdir clang && cd clang
           wget https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt
           export V="$(cat Clang-main-lastbuild.txt)"
-          wget https://github.com/ZyCromerZ/Clang/releases/download/18.0.0-${V}-release/Clang-18.0.0-${V}.tar.gz
-          tar -xf Clang-18.0.0-${V}.tar.gz
-          cd ..
+          wget -q https://github.com/ZyCromerZ/Clang/releases/download/18.0.0-${V}-release/Clang-18.0.0-${V}.tar.gz
+          tar -xzf Clang-18.0.0-${V}.tar.gz
           
       - name: Setup KernelSU
         run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           rm -rf KernelSU
           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
 
