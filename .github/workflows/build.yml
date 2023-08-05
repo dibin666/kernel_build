@@ -65,6 +65,7 @@ jobs:
           ./magiskbootx86_64 unpack boot.img
           mv -f Image kernel
           ./magiskbootx86_64 repack boot.img
+          ls
 
       - name: Upload boot image
         uses: actions/upload-artifact@v3
