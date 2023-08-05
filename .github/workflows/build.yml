@@ -71,6 +71,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: boot-${{ env.BUILD_TIME }}
-          path: $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/out/arch/arm64/boot/new-boot.img
+          path: kernel_buildspace/kernel-source/out/arch/arm64/boot/new-boot.img
 
 
