@@ -53,7 +53,8 @@ jobs:
                                   O=out \
                                   ${{ env.BUILD_ARGS }} \
                                   CROSS_COMPILE=gcc64/bin/aarch64-linux-android- \
-                                  CROSS_COMPILE_ARM32=gcc32/bin/arm-linux-androideabi- "
+                                  CROSS_COMPILE_ARM32=gcc32/bin/arm-linux-androideabi- \
+                                  CLANG_TRIPLE=aarch64-linux-gnu- "
           make ${args} ${{ env.KERNEL_TARGET }}
           make -j$(nproc --all) ${args}
 
