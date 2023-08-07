@@ -62,9 +62,9 @@ jobs:
 
       - name: Pull Anykernel3
         run: |
-          rm -rf Anykernel3
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
-          git clone --depth=1 ${{ env.ANYKERNEL3_GIT }} -b ${{ env.ANYKERNEL3_BRANCH }} AnyKernel3
+          rm -rf Anykernel3
+          git clone --depth=1 ${{ env.ANYKERNEL3_GIT }} -b ${{ env.ANYKERNEL3_BRANCH }}
 
       - name: Package kernel
         run: |
@@ -81,7 +81,10 @@ jobs:
           if [ -f out/arch/arm64/boot/dtbo.img ]; then
             cp out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
           fi
-
+          
+      - name: Change working directory
+        run: $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+        
       - name: Upload kernel to artifact
         uses: actions/upload-artifact@v3
         with:
