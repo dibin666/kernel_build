@@ -47,19 +47,22 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           export CLANG_PATH=$GITHUB_WORKSPACE/kernel_buildspace/kernel-source/clang
+          export GCC32_PATH=$GITHUB_WORKSPACE/kernel_buildspace/kernel-source/gcc32
+          export GCC64_PATH=$GITHUB_WORKSPACE/kernel_buildspace/kernel-source/gcc64
           export PATH=${CLANG_PATH}/bin:${PATH}
           args="                  ARCH=arm64 \
                                   CC=clang \
                                   O=out \
                                   ${{ env.BUILD_ARGS }} \
-                                  CROSS_COMPILE=gcc64/bin/aarch64-linux-android- \
-                                  CROSS_COMPILE_ARM32=gcc32/bin/arm-linux-androideabi- \
+                                  CROSS_COMPILE=${GCC64_PATH}/bin/aarch64-linux-android- \
+                                  CROSS_COMPILE_ARM32=${GCC32_PATH}/bin/arm-linux-androideabi- \
                                   CLANG_TRIPLE=aarch64-linux-gnu- "
           make ${args} ${{ env.KERNEL_TARGET }}
           make -j$(nproc --all) ${args}
 
       - name: Pull Anykernel3
         run: |
+          rm -rf Anykernel3
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           git clone --depth=1 ${{ env.ANYKERNEL3_GIT }} -b ${{ env.ANYKERNEL3_BRANCH }} AnyKernel3
 
