@@ -83,6 +83,7 @@ jobs:
           fi
           cd AnyKernel3
           zip -r Anykernel3-perf-kugo.zip * -x README Anykernel3-perf-kugo.zip
+          ls
           
       - name: Upload kernel to artifact
         uses: actions/upload-artifact@v3
