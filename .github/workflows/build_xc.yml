@@ -1,0 +1,84 @@
+name: Build Kernel (kugo)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup environment
+        run: |
+          echo "KERNEL_SOURCE=$(cat config2.env | grep -w "KERNEL_SOURCE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+          echo "KERNEL_SOURCE_BRANCH=$(cat config2.env | grep -w "KERNEL_SOURCE_BRANCH" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+          echo "KERNEL_TARGET=$(cat config2.env | grep -w "KERNEL_TARGET" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+          echo "BUILD_ARGS=$(cat config2.env | grep -w "BUILD_ARGS" | head -n 1 | cut -d ":" -f 2)" >> $GITHUB_ENV
+          echo "ANYKERNEL3_GIT=$(cat config2.env | grep -w "SOURCE_BOOT_IMAGE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+          echo "ANYKERNEL3_BRANCH=$(cat config2.env | grep -w "SOURCE_BOOT_IMAGE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+          echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+          sudo apt-get update
+          sudo apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl tar bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
+          mkdir -p $GITHUB_WORKSPACE/kernel_buildspace
+          current_time=$(date +"%Y-%m-%d-%H-%S")
+
+      - name: Pull kernel source
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace
+          git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} kernel-source
+          
+      - name: Pull toolchain
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 aarch64-linux-android-4.9 gcc64
+          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 arm-linux-androideabi-4.9 gcc32
+          mkdir clang && curl https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b1.tar.gz -RLO && tar -C clang/ -xf clang-*.tar.gz
+          
+      - name: Setup KernelSU
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+          rm -rf KernelSU
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+
+      - name: Build kernel
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+          export CLANG_PATH=$GITHUB_WORKSPACE/kernel_buildspace/kernel-source/clang
+          export PATH=${CLANG_PATH}/bin:${PATH}
+          args="                  ARCH=arm64 \
+                                  CC=clang \
+                                  O=out \
+                                  ${{ env.BUILD_ARGS }} \
+                                  CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_buildspace/kernel-source/gcc64/bin/aarch64-linux-android- \
+                                  $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/gcc32/bin/arm-linux-androideabi- "
+          make ${args} ${{ env.KERNEL_TARGET }}
+          make -j$(nproc --all) ${args}
+
+      - name: Pull Anykernel3
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+          git clone --depth=1 ${{ env.ANYKERNEL3_GIT }} -b ${{ env.ANYKERNEL3_BRANCH }} AnyKernel3
+
+      - name: Package kernel
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+          if [[ -f out/arch/arm64/boot/Image.gz-dtb ]]; then
+            cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/Image.gz-dtb
+          elif [[ -f out/arch/arm64/boot/Image-dtb ]]; then
+            cp out/arch/arm64/boot/Image-dtb AnyKernel3/Image-dtb
+          elif [[ -f out/arch/arm64/boot/Image.gz ]]; then
+            cp out/arch/arm64/boot/Image.gz AnyKernel3/Image.gz
+          elif [[ -f out/arch/arm64/boot/Image ]]; then
+            cp out/arch/arm64/boot/Image AnyKernel3/Image
+          fi
+          if [ -f out/arch/arm64/boot/dtbo.img ]; then
+            cp out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
+          fi
+
+      - name: Upload kernel to artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Anykernel3-perf-kugo-${current_time}
+          path: Anykernel3/*
+
