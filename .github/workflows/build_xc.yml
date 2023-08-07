@@ -88,5 +88,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Anykernel3-perf-kugo-${current_time}
-          path: $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/Anykernel3/Anykernel3-perf-kugo.zip
+          path: kernel_buildspace/kernel-source/Anykernel3/Anykernel3-perf-kugo.zip
 
