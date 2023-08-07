@@ -81,13 +81,12 @@ jobs:
           if [ -f out/arch/arm64/boot/dtbo.img ]; then
             cp out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
           fi
+          cd Anykernel3
+          zip -r Anykernel3-perf-kugo-${current_time}.zip * -x README Anykernel3-perf-kugo-${current_time}.zip
           
-      - name: Change working directory
-        run: cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
-        
       - name: Upload kernel to artifact
         uses: actions/upload-artifact@v3
         with:
           name: Anykernel3-perf-kugo-${current_time}
-          path: Anykernel3/*
+          path: $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/Anykernel3/Anykernel3-perf-kugo-${current_time}.zip
 
