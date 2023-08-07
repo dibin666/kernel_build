@@ -1,2 +1,2 @@
 # kernel_build
-[![Build Kernel](https://github.com/dibin666/kernel_build/actions/workflows/build.yml/badge.svg)](https://github.com/dibin666/kernel_build/actions/workflows/build.yml)
+[![Build Kernel (Lmi)](https://github.com/dibin666/kernel_build/actions/workflows/build_lmi.yml/badge.svg)](https://github.com/dibin666/kernel_build/actions/workflows/build_lmi.yml) (Lmi)
