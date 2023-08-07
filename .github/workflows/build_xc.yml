@@ -83,7 +83,7 @@ jobs:
           fi
           
       - name: Change working directory
-        run: $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+        run: cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
         
       - name: Upload kernel to artifact
         uses: actions/upload-artifact@v3
