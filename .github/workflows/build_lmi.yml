@@ -1,4 +1,4 @@
-name: Build Kernel
+name: Build Kernel (Lmi)
 on:
   workflow_dispatch:
   schedule:
