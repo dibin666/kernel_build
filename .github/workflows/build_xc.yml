@@ -88,6 +88,7 @@ jobs:
       - name: Upload kernel to artifact
         uses: actions/upload-artifact@v3
         with:
+          working-directory: $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/AnyKernel3
           name: Anykernel3-perf-kugo-${current_time}
-          path: kernel_buildspace/kernel-source/Anykernel3/Anykernel3-perf-kugo.zip
+          path: Anykernel3-perf-kugo.zip
 
