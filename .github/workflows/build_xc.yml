@@ -65,12 +65,10 @@ jobs:
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           rm -rf Anykernel3
           git clone --depth=1 ${{ env.ANYKERNEL3_GIT }} -b ${{ env.ANYKERNEL3_BRANCH }}
-          ls
 
       - name: Package kernel
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
-          ls
           if [[ -f out/arch/arm64/boot/Image.gz-dtb ]]; then
             cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/Image.gz-dtb
           elif [[ -f out/arch/arm64/boot/Image-dtb ]]; then
@@ -84,11 +82,11 @@ jobs:
             cp out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
           fi
           cd AnyKernel3
-          zip -r Anykernel3-perf-kugo-${current_time}.zip * -x README Anykernel3-perf-kugo-${current_time}.zip
+          zip -r Anykernel3-perf-kugo.zip * -x README Anykernel3-perf-kugo.zip
           
       - name: Upload kernel to artifact
         uses: actions/upload-artifact@v3
         with:
           name: Anykernel3-perf-kugo-${current_time}
-          path: $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/Anykernel3/Anykernel3-perf-kugo-${current_time}.zip
+          path: $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/Anykernel3/Anykernel3-perf-kugo.zip
 
