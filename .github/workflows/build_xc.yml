@@ -2,7 +2,7 @@ name: Build Kernel (kugo)
 on:
   push:
     tags:
-      - "v*"
+      - "KernelSU-*"
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
