@@ -2,7 +2,7 @@ name: Build Kernel (maple_dsds)
 on:
   push:
     tags:
-      - "v*"
+      - "KernelSU-*"
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
