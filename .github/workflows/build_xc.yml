@@ -1,5 +1,8 @@
 name: Build Kernel (kugo)
 on:
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
