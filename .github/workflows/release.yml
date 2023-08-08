@@ -1,0 +1,19 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build_lmi:
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/build_lmi.yml
+
+  build_xc:
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/build_xc.yml
+
+  build_xzp:
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/build_xzp.yml
