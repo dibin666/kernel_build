@@ -84,5 +84,5 @@ jobs:
       - name: Upload kernel to artifact
         uses: actions/upload-artifact@v3
         with:
-          name: Anykernel3-perf-kugo-KernelSU-${{ env.BUILD_TIME }}
+          name: Anykernel3-whatawurst-maple_dsds-KernelSU-${{ env.BUILD_TIME }}
           path: kernel_buildspace/kernel-source/AnyKernel3/*
