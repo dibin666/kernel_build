@@ -24,20 +24,26 @@ jobs:
           sudo apt-get update
           sudo apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl tar bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
           mkdir -p $GITHUB_WORKSPACE/kernel_buildspace
-
-      - name: Pull kernel source
-        run: |
-          cd $GITHUB_WORKSPACE/kernel_buildspace
-          git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} kernel-source
           
       - name: Pull toolchain
         run: |
-          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+          cd $GITHUB_WORKSPACE/kernel_buildspace
           git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 gcc64
           git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 gcc32
           mkdir clang && cd clang
           wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b1.tar.gz
           tar -xzf clang-r416183b1.tar.gz
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: build-kernel
+          max-size: 2G
+
+      - name: Pull kernel source
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace
+          git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} kernel-source
           
       - name: Setup KernelSU
         run: |
@@ -48,9 +54,9 @@ jobs:
       - name: Build kernel
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
-          export CLANG_PATH=$GITHUB_WORKSPACE/kernel_buildspace/kernel-source/clang
-          export GCC32_PATH=$GITHUB_WORKSPACE/kernel_buildspace/kernel-source/gcc32
-          export GCC64_PATH=$GITHUB_WORKSPACE/kernel_buildspace/kernel-source/gcc64
+          export CLANG_PATH=$GITHUB_WORKSPACE/kernel_buildspace/clang
+          export GCC32_PATH=$GITHUB_WORKSPACE/kernel_buildspace/gcc32
+          export GCC64_PATH=$GITHUB_WORKSPACE/kernel_buildspace/gcc64
           export PATH=${CLANG_PATH}/bin:${PATH}
           args="                  ARCH=arm64 \
                                   CC=clang \
