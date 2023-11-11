@@ -1,0 +1,81 @@
+name: Build Kernel (lmi_A14)
+on:
+  push:
+    tags:
+      - "KernelSU-*"
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup environment
+        run: |
+          echo "KERNEL_SOURCE=$(cat config.env | grep -w "KERNEL_SOURCE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+          echo "KERNEL_SOURCE_BRANCH=$(cat config.env | grep -w "KERNEL_SOURCE_BRANCH" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+          echo "KERNEL_TARGET=$(cat config.env | grep -w "KERNEL_TARGET" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+          echo "BUILD_ARGS=$(cat config.env | grep -w "BUILD_ARGS" | head -n 1 | cut -d ":" -f 2)" >> $GITHUB_ENV
+          echo "SOURCE_BOOT_IMAGE=$(cat config.env | grep -w "SOURCE_BOOT_IMAGE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+          echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y-%m-%d-%H-%M")" >> $GITHUB_ENV
+          sudo apt-get update
+          sudo apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl tar bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
+          mkdir -p $GITHUB_WORKSPACE/kernel_buildspace
+          
+      - name: Pull toolchain
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace
+          mkdir clang && cd clang
+          wget https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt
+          export V="$(cat Clang-main-lastbuild.txt)"
+          wget -q https://github.com/ZyCromerZ/Clang/releases/download/18.0.0-${V}-release/Clang-18.0.0-${V}.tar.gz
+          tar -xzvf Clang-18.0.0-${V}.tar.gz
+          
+      - name: Pull kernel source
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace
+          git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} kernel-source
+
+      - name: Setup KernelSU
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+          rm -rf KernelSU
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+
+      - name: Build kernel
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+          export CLANG_PATH=$GITHUB_WORKSPACE/kernel_buildspace/clang
+          export PATH=${CLANG_PATH}/bin:${PATH}
+          args="                  ARCH=arm64 \
+                                  CC=clang \
+                                  O=out \
+                                  ${{ env.BUILD_ARGS }} \
+                                  CROSS_COMPILE=aarch64-linux-gnu-"
+          make ${args} ${{ env.KERNEL_TARGET }}
+          make -j$(nproc --all) ${args}
+
+      - name: Download source boot image and magiskboot
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/out/arch/arm64/boot
+          wget https://github.com/dibin666/toolchains/releases/download/magiskboot/magiskbootx86_64
+          chmod +x magiskbootx86_64
+          wget -O boot.img ${{ env.SOURCE_BOOT_IMAGE }}
+
+      - name: Replace source-boot kernel
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/out/arch/arm64/boot
+          ./magiskbootx86_64 unpack boot.img
+          mv -f Image kernel
+          ./magiskbootx86_64 repack boot.img
+          ls
+
+      - name: Upload boot image
+        uses: actions/upload-artifact@v3
+        with:
+          name: boot-${{ env.BUILD_TIME }}
+          path: kernel_buildspace/kernel-source/out/arch/arm64/boot/new-boot.img
+
+
