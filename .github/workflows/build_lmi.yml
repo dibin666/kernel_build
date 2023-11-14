@@ -60,16 +60,16 @@ jobs:
       - name: Download source boot image and magiskboot
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/out/arch/arm64/boot
-          wget https://github.com/dibin666/toolchains/releases/download/magiskboot/magiskbootx86_64
-          chmod +x magiskbootx86_64
+          https://github.com/dibin666/kernel_build/releases/download/magiskboot-v26.4/magiskboot
+          chmod +x magiskboot
           wget -O boot.img ${{ env.SOURCE_BOOT_IMAGE }}
 
       - name: Replace source-boot kernel
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/out/arch/arm64/boot
-          ./magiskbootx86_64 unpack boot.img
+          ./magiskboot unpack boot.img
           mv -f Image kernel
-          ./magiskbootx86_64 repack boot.img
+          ./magiskboot repack boot.img
           ls
 
       - name: Upload boot image
