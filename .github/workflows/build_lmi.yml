@@ -60,7 +60,7 @@ jobs:
       - name: Download source boot image and magiskboot
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source/out/arch/arm64/boot
-          https://github.com/dibin666/kernel_build/releases/download/magiskboot-v26.4/magiskboot
+          wget https://github.com/dibin666/kernel_build/releases/download/magiskboot-v26.4/magiskboot
           chmod +x magiskboot
           wget -O boot.img ${{ env.SOURCE_BOOT_IMAGE }}
 
