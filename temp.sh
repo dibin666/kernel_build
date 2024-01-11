@@ -18,7 +18,7 @@ fi
 test -d "$GKI_ROOT/KernelSU" || git clone https://github.com/Ylarod/KernelSU
 cd "$GKI_ROOT/KernelSU"
 
-git checkout trolling
+git checkout main
 
 echo "[+] GKI_ROOT: $GKI_ROOT"
 echo "[+] Copy kernel su driver to $DRIVER_DIR"
