@@ -19,7 +19,7 @@ test -d "$GKI_ROOT/KernelSU" || git clone https://github.com/Ylarod/KernelSU
 cd "$GKI_ROOT/KernelSU"
 git stash
 if [ "$(git status | grep -Po 'v\d+(\.\d+)*' | head -n1)" ]; then
-     git checkout main
+     git checkout trolling
 fi
 git pull
 if [ -z "${1-}" ]; then
