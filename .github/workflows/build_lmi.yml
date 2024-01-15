@@ -42,7 +42,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           rm -rf KernelSU
-          curl -LSs "https://raw.githubusercontent.com/dibin666/kernel_build/main/temp.sh" | bash -
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
 
       - name: Build kernel
         run: |
