@@ -23,9 +23,11 @@ jobs:
       - name: Pull toolchain
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace
+          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 gcc64
+          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 gcc32
           mkdir clang && cd clang
-          wget -q https://github.com/ZyCromerZ/Clang/releases/download/18.0.0git-20240124-release/Clang-18.0.0git-20240124.tar.gz
-          tar -xzvf Clang-18.0.0git-20240124.tar.gz
+          wget https://android.googlesource.com/platform//prebuilts/clang/host/linux-x86/+archive/refs/heads/android14-release/clang-r475365b.tar.gz
+          tar -xzf clang-r416183b1.tar.gz
           
       - name: Pull kernel source
         run: |
@@ -36,18 +38,23 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           rm -rf KernelSU
-          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+          rm -rf drivers/kernelsu
+          curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs
 
       - name: Build kernel
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           export CLANG_PATH=$GITHUB_WORKSPACE/kernel_buildspace/clang
+          export GCC32_PATH=$GITHUB_WORKSPACE/kernel_buildspace/gcc32
+          export GCC64_PATH=$GITHUB_WORKSPACE/kernel_buildspace/gcc64
           export PATH=${CLANG_PATH}/bin:${PATH}
           args="                  ARCH=arm64 \
                                   CC=clang \
                                   O=out \
                                   ${{ env.BUILD_ARGS }} \
-                                  CROSS_COMPILE=aarch64-linux-gnu-"
+                                  CROSS_COMPILE=${GCC64_PATH}/bin/aarch64-linux-android- \
+                                  CROSS_COMPILE_ARM32=${GCC32_PATH}/bin/arm-linux-androideabi- \
+                                  CLANG_TRIPLE=aarch64-linux-gnu- "
           make ${args} ${{ env.KERNEL_TARGET }}
           make -j$(nproc --all) ${args}
 
