@@ -27,7 +27,7 @@ jobs:
           git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 gcc32
           mkdir clang && cd clang
           wget https://android.googlesource.com/platform//prebuilts/clang/host/linux-x86/+archive/refs/heads/android14-release/clang-r475365b.tar.gz
-          tar -xzf clang-r416183b1.tar.gz
+          tar -xzf clang-r475365b.tar.gz
           
       - name: Pull kernel source
         run: |
