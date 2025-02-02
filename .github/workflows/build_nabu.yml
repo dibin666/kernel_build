@@ -1,11 +1,7 @@
 name: Build Kernel (lmi_A14)
 on:
   push:
-    tags:
-      - "KernelSU-*"
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
   build:
@@ -28,10 +24,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace
           mkdir clang && cd clang
-          wget https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt
-          export V="$(cat Clang-main-lastbuild.txt)"
-          wget -q https://github.com/ZyCromerZ/Clang/releases/download/18.0.0-${V}-release/Clang-18.0.0-${V}.tar.gz
-          tar -xzvf Clang-18.0.0-${V}.tar.gz
+          wget -q https://github.com/ZyCromerZ/Clang/releases/download/18.0.0git-20240124-release/Clang-18.0.0git-20240124.tar.gz
+          tar -xzvf Clang-18.0.0git-20240124.tar.gz
           
       - name: Pull kernel source
         run: |
