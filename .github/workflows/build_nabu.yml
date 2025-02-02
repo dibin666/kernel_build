@@ -1,4 +1,4 @@
-name: Build Kernel (lmi_A14)
+name: Build Kernel (nabu)
 on:
   push:
   workflow_dispatch:
@@ -26,8 +26,8 @@ jobs:
           git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 gcc64
           git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 gcc32
           mkdir clang && cd clang
-          wget https://github.com/Neutron-Toolchains/clang-build-catalogue/releases/download/05012024/neutron-clang-05012024.tar.zst
-          tar -I zstd -xvf neutron-clang-05012024.tar.zst
+          wget https://github.com/Neutron-Toolchains/clang-build-catalogue/releases/download/15012023/neutron-clang-15012023.tar.zst
+          tar -I zstd -xvf neutron-clang-15012023.tar.zst
           
       - name: Pull kernel source
         run: |
