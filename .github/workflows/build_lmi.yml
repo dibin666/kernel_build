@@ -1,6 +1,5 @@
 name: Build Kernel (lmi)
 on:
-  push:
   workflow_dispatch:
 
 jobs:
