@@ -1,6 +1,5 @@
 name: Build Kernel (nabu)
 on:
-  push:
   workflow_dispatch:
 
 jobs:
