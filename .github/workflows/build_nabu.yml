@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Setup environment
@@ -17,43 +17,40 @@ jobs:
           echo "SOURCE_BOOT_IMAGE=$(cat config4.env | grep -w "SOURCE_BOOT_IMAGE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
           echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y-%m-%d-%H-%M")" >> $GITHUB_ENV
           sudo apt-get update
-          sudo apt-get install git ccache automake flex lzop bison zstd gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl tar bc libc6-dev-i386 libncurses-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python3
+          sudo -E apt-get -qq install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32readline-dev lib32z1-dev liblz4-tool libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev libc6-dev-i386 libncurses6 libncursesw6 lib32ncurses-dev lib32ncurses6 lib32ncursesw6 libncurses5-dev x11proto-core-dev libx11-dev libgl1-mesa-dev unzip fontconfig make python2
+          sudo -E apt-get -qq install libfuse-dev
           mkdir -p $GITHUB_WORKSPACE/kernel_buildspace
           
       - name: Pull toolchain
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace
-          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 gcc64
-          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 gcc32
           mkdir clang && cd clang
-          wget https://github.com/Neutron-Toolchains/clang-build-catalogue/releases/download/15012023/neutron-clang-15012023.tar.zst
-          tar -I zstd -xvf neutron-clang-15012023.tar.zst
+          wget https://github.com/XSans0/WeebX-Clang/releases/download/WeebX-Clang-19.1.5-release/WeebX-Clang-19.1.5.tar.gz
+          tar zxvf WeebX-Clang-19.1.5.tar.gz
           
       - name: Pull kernel source
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace
           git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} kernel-source
 
-      - name: Setup KernelSU
-        run: |
-          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
-          rm -rf KernelSU
-          rm -rf drivers/kernelsu
-          curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs
+      # - name: Setup KernelSU
+      #   run: |
+      #     cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+      #     rm -rf KernelSU
+      #     rm -rf drivers/kernelsu
+      #     curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs
 
       - name: Build kernel
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
           export CLANG_PATH=$GITHUB_WORKSPACE/kernel_buildspace/clang
-          export GCC32_PATH=$GITHUB_WORKSPACE/kernel_buildspace/gcc32
-          export GCC64_PATH=$GITHUB_WORKSPACE/kernel_buildspace/gcc64
           export PATH=${CLANG_PATH}/bin:${PATH}
           args="                  ARCH=arm64 \
                                   CC=clang \
                                   O=out \
                                   ${{ env.BUILD_ARGS }} \
-                                  CROSS_COMPILE=${GCC64_PATH}/bin/aarch64-linux-android- \
-                                  CROSS_COMPILE_ARM32=${GCC32_PATH}/bin/arm-linux-androideabi- \
+                                  CROSS_COMPILE=aarch64-linux-gnu- \
+                                  CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
                                   CLANG_TRIPLE=aarch64-linux-gnu- "
           make ${args} ${{ env.KERNEL_TARGET }}
           make -j$(nproc --all) ${args}
