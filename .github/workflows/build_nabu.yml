@@ -33,12 +33,12 @@ jobs:
           cd $GITHUB_WORKSPACE/kernel_buildspace
           git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} kernel-source
 
-      # - name: Setup KernelSU
-      #   run: |
-      #     cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
-      #     rm -rf KernelSU
-      #     rm -rf drivers/kernelsu
-      #     curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs
+      - name: Setup KernelSU
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
+          rm -rf KernelSU
+          rm -rf drivers/kernelsu
+          curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs
 
       - name: Build kernel
         run: |
