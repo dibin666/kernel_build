@@ -35,9 +35,9 @@ jobs:
       - name: Setup KernelSU
         run: |
           cd $GITHUB_WORKSPACE/kernel_buildspace/kernel-source
-          rm -rf KernelSU-Next
+          rm -rf KernelSU
           rm -rf drivers/kernelsu
-          curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs
+          curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s main
 
       - name: Build kernel
         run: |
