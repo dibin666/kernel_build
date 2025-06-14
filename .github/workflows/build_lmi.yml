@@ -25,7 +25,7 @@ jobs:
           cd $GITHUB_WORKSPACE/kernel_buildspace
           mkdir clang && cd clang
           wget https://github.com/tomxi1997/AOSP-Clang_arm64/releases/download/v5.1/clang-r399163.tar.xz
-          tar zxvf clang-r399163.tar.xz
+          tar -xvf clang-r399163.tar.xz
           
       - name: Pull kernel source
         run: |
